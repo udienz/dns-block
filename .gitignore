@@ -1,0 +1,6 @@
+www/
+uncompress/
+shallalist/
+conf/*.conf
+bin/update-all.sh
+bin/make-zone
