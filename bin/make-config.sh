@@ -1,15 +1,14 @@
 #!/bin/bash
 
-#set -x
-
 BASE=/srv/archive.mahyudd.in
 DLDIRTO=$BASE/shallalist/
 DLFILETO=$DLDIRTO/BL.tar.gz
 EXTARCTDIR=$BASE/uncompress
+#SRCDL=http://archive.mahyudd.in/dns-block/BL.tar.gz
 SRCDL=http://www.shallalist.de/Downloads/shallalist.tar.gz
-CATEGORIES="aggressive"
-#CATEGORIES="adv aggressive drugs gamble hacking porn sex/lingerie spyware tracker updatesites violence warez "
-OUTDIR=$BASE/www/BL
+#CATEGORIES="aggressive"
+CATEGORIES="adv aggressive drugs gamble hacking porn sex/lingerie spyware tracker updatesites violence warez "
+OUTDIR=$BASE/out
 ZONEDIR=$OUTDIR/zones
 CONFDIR=$OUTDIR/conf
 
@@ -59,29 +58,37 @@ fi
 
 #cek_file_exist $DLFILETO
 
+cd $BASE/shallalist/
+wget $SRCDL -N
 #wget $SRCDL -O $DLFILETO -c
-wget -N -O $DLFILETO $SRCDL
+
 if [ "$?" = "0" ]; then
-	echo 'remote have newer list'
+
+	echo 'Successfully download proper file'
+	mv $BASE/shallalist/shallalist.tar.gz $DLFILETO
+	cd $BASE
 	tar -xzf $DLFILETO -C $EXTARCTDIR
 	mkdir -p $ZONEDIR $CONFDIR
 	for kategori in $CATEGORIES
 		do
 		echo "build $kategori"
+		cek_dir_exist $ZONEDIR/$kategori
+
 		grep -v [0-9]$ $EXTARCTDIR/BL/$kategori/domains | sed -e '/\//d' | while read bl
 			do
 				#make domain here
-				cek_dir_exist $ZONEDIR/$kategori
 				cek_file_exist $CONFDIR/$kategori/$bl
 				make_domain $kategori $bl
 				make_zoneconf $kategori $bl
 			done
-				set -x
-				tar -czf $ZONEDIR/$kategori.tar.gz $ZONEDIR/$kategori/
-				tar -czf $CONFDIR/$kategori.tar.gz $CONFDIR/$kategori.conf
-				set +x
+				cd $ZONEDIR
+				tar cJf $ZONEDIR/$kategori.xz.tmp $kategori/
+				mv $ZONEDIR/$kategori.xz.tmp $ZONEDIR/$kategori.xz
+				cd $CONFDIR
+				tar cJf $CONFDIR/$kategori.xz.tmp $kategori.conf
+				mv $CONFDIR/$kategori.xz.tmp $CONFDIR/$kategori.xz
 		done
 else
-	echo 'remote does not have newer file'
+	echo 'cannot download files'
 	exit 0
 fi

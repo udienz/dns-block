@@ -4,3 +4,7 @@ shallalist/
 conf/*.conf
 bin/update-all.sh
 bin/make-zone
+out/conf/*
+out/zones/*
+out/*.gz
+out/*.log
