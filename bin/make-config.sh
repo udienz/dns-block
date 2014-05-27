@@ -13,7 +13,7 @@ ZONEDIR=$OUTDIR/zones
 CONFDIR=$OUTDIR/conf
 
 make_domain () {
-cat > $ZONEDIR/$1/$2.zone<<EOF
+cat > $ZONEDIR/$1/$2.zone.tmp<<EOF
 \$TTL 86400
 $2.   86400   IN      SOA     ns.sby.rad.net.id.      udienz.rad.net.id.      (
                                                 `date +%Y%m%d%H%M` ;Serial Number
@@ -30,16 +30,20 @@ $2.   86400   IN      NS      ns1.sby.rad.net.id.
 $2.   86400   IN      NS      ns2.sby.rad.net.id.
 $2.   14400   IN      A       127.0.0.1
 EOF
+mv $ZONEDIR/$1/$2.zone.tmp $ZONEDIR/$1/$2.zone
+
 }
 
 make_zoneconf () {
-cat >>$CONFDIR/$1.conf<<EOF
+cat >>$CONFDIR/$1.conf.tmp<<EOF
 zone "$2" {
 	type master;
 	file "/srv/bind/zone/$1/$2.zone";
-}
+};
 
 EOF
+mv $CONFDIR/$1.conf.tmp $CONFDIR/$1.conf
+
 }
 
 cek_file_exist () {
