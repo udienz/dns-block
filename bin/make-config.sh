@@ -43,21 +43,12 @@ zone "$2" {
 EOF
 }
 
-cek_file_exist () {
-	if [ -f $1 ];
-		then
-		rm $1
-	fi
-}
-
 cek_dir_exist () {
 	if [ ! -d $1 ];
 	then
 	mkdir -p $1
 fi
 }
-
-#cek_file_exist $DLFILETO
 
 cd $BASE/shallalist/
 wget $SRCDL -N
@@ -78,8 +69,10 @@ if [ "$?" = "0" ]; then
 		grep -v [0-9]$ $EXTARCTDIR/BL/$kategori/domains | sed -e '/\//d' | while read bl
 			do
 				#make domain here
-				cek_file_exist $CONFDIR/$kategori/$bl
-				make_domain $kategori $bl
+				if [ ! -f $ZONEDIR/$kategori/$bl.zone ];
+					then
+					make_domain $kategori $bl
+				fi
 				make_zoneconf $kategori $bl
 			done
 				cd $ZONEDIR
