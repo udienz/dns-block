@@ -31,7 +31,6 @@ $2.   86400   IN      NS      ns2.sby.rad.net.id.
 $2.   14400   IN      A       127.0.0.1
 EOF
 mv $ZONEDIR/$1/$2.zone.tmp $ZONEDIR/$1/$2.zone
-
 }
 
 make_zoneconf () {
@@ -42,8 +41,6 @@ zone "$2" {
 };
 
 EOF
-mv $CONFDIR/$1.conf.tmp $CONFDIR/$1.conf
-
 }
 
 cek_file_exist () {
@@ -86,6 +83,7 @@ if [ "$?" = "0" ]; then
 				make_zoneconf $kategori $bl
 			done
 				cd $ZONEDIR
+				mv $CONFDIR/$kategori.conf.tmp $CONFDIR/$kategori.conf
 				tar cJf $ZONEDIR/$kategori.xz.tmp $kategori/
 				mv $ZONEDIR/$kategori.xz.tmp $ZONEDIR/$kategori.xz
 				cd $CONFDIR
